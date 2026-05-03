@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Dashboard — Architect Workbench</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Portfolio Command Dashboard</h1>
+  <div class="subtitle">
+    Canon &middot; Media &middot; Disciplines &middot; Codex Intake
+    <span id="version-badge">v1.0</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-tab="overview">Overview</button>
+  <button class="tab-btn"        data-tab="canon">Canon (22)</button>
+  <button class="tab-btn"        data-tab="media">Media</button>
+  <button class="tab-btn"        data-tab="disciplines">Disciplines</button>
+  <button class="tab-btn"        data-tab="codex">Codex Intake</button>
+</nav>
+
+<main>
+
+  <section id="overview" class="tab-pane active">
+    <h2>Snapshot</h2>
+    <div class="stats-grid" id="overview-stats">Loading...</div>
+
+    <h3>Per-project diagram audit</h3>
+    <div class="lookup">
+      <input id="diag-keyword" type="text" placeholder="keyword (e.g. forge, neural, lattice)" value="forge">
+      <button id="diag-go">Audit</button>
+    </div>
+    <pre id="diag-out">Run an audit above to see hits.</pre>
+  </section>
+
+  <section id="canon" class="tab-pane">
+    <h2>Canon — 22 entries</h2>
+    <div class="stats-grid" id="canon-stats">Loading...</div>
+    <table id="canon-table">
+      <thead><tr>
+        <th>#</th><th>Name</th><th>Tier</th><th>Tests</th><th>URL</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section id="media" class="tab-pane">
+    <h2>Media Library</h2>
+    <div class="stats-grid" id="media-stats">Loading...</div>
+  </section>
+
+  <section id="disciplines" class="tab-pane">
+    <h2>Always-On Disciplines</h2>
+    <div class="stats-grid" id="discipline-stats">Loading...</div>
+    <ol id="discipline-list"></ol>
+  </section>
+
+  <section id="codex" class="tab-pane">
+    <h2>Codex Concept Intake</h2>
+    <div class="stats-grid" id="codex-stats">Loading...</div>
+
+    <h3>Ingest a concept board</h3>
+    <form id="ingest-form">
+      <label>label <input name="label" required></label>
+      <label>source_path <input name="source_path" required></label>
+      <label>title <input name="title" required></label>
+      <label>usefulness <textarea name="usefulness" rows="2" required></textarea></label>
+      <label>legend (one per line)
+        <textarea name="legend" rows="3" placeholder="Tetrahedron: foundation"></textarea>
+      </label>
+      <button type="submit">Ingest</button>
+    </form>
+    <pre id="ingest-out"></pre>
+
+    <h3>Artifacts</h3>
+    <table id="artifacts-table"><thead><tr>
+      <th>ID</th><th>Label</th><th>Kind</th><th>Status</th><th>Role</th>
+    </tr></thead><tbody></tbody></table>
+
+    <h3>Working Memories</h3>
+    <table id="memories-table"><thead><tr>
+      <th>ID</th><th>Topic</th><th>Value</th><th>Confidence</th>
+    </tr></thead><tbody></tbody></table>
+
+    <h3>Next Actions (open)</h3>
+    <table id="actions-table"><thead><tr>
+      <th>Seq</th><th>Action</th><th>Source</th><th>Status</th>
+    </tr></thead><tbody></tbody></table>
+
+    <h3>Skill Seeds</h3>
+    <table id="skills-table"><thead><tr>
+      <th>ID</th><th>Skill</th><th>Purpose</th><th>Status</th>
+    </tr></thead><tbody></tbody></table>
+  </section>
+
+</main>
+
+<footer>
+  Codex Concept Intake &amp; Portfolio Dashboard &middot; canon #23 &middot;
+  Archivist of Wisdom co-creator role &middot; MIT
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

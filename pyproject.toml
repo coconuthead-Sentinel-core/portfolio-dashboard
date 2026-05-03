@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portfolio-dashboard"
+version = "1.0.0"
+description = "Codex Concept Intake & Portfolio Dashboard — unified live view of canon, media, disciplines, and concept-board intake."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Shannon Brian Kelly" }
+]
+keywords = [
+    "portfolio-dashboard",
+    "codex-intake",
+    "fastapi",
+    "sqlite",
+    "concept-board",
+    "cstm",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "pydantic>=2.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+portfolio-dashboard = "portfolio_dashboard.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["portfolio_dashboard*"]
+
+[tool.setuptools.package-data]
+portfolio_dashboard = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
