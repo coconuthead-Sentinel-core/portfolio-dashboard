@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from .aggregator import PortfolioAggregator
 from .ingest import ConceptBoard, ingest_concept_board
+from .lattice_bridge import CodexLatticeBridge
 from .schema import (
     ArtifactRecord,
     NextActionRecord,
@@ -83,11 +84,13 @@ class SkillIn(BaseModel):
 
 
 # ── App factory ────────────────────────────────────────────────────
-def create_app(*, db_path: str = ":memory:") -> FastAPI:
-    """Build the FastAPI app, wired to a CodexStore + portfolio modules."""
+def create_app(*, db_path: str = ":memory:",
+               lattice_persist_dir: str = "./_lattice_runs") -> FastAPI:
+    """Build the FastAPI app, wired to a CodexStore + portfolio modules
+    + an optional CSTM_Lattice bridge."""
     app = FastAPI(
         title="Codex Concept Intake & Portfolio Dashboard",
-        version="1.0.0",
+        version="1.1.0",
     )
     app.add_middleware(
         CORSMiddleware,
@@ -101,8 +104,10 @@ def create_app(*, db_path: str = ":memory:") -> FastAPI:
         diagrams_module=modules["diagrams"],
         always_on_module=modules["always_on"],
     )
+    bridge = CodexLatticeBridge(persist_dir=lattice_persist_dir)
     app.state.store = store
     app.state.aggregator = aggregator
+    app.state.bridge = bridge
 
     # ── Portfolio endpoints ─────────────────────────────────────
     @app.get("/api/snapshot")
@@ -186,11 +191,38 @@ def create_app(*, db_path: str = ":memory:") -> FastAPI:
 
     # ── Concept-board ingest ──────────────────────────────────
     @app.post("/api/codex/ingest")
-    def ingest(board: ConceptBoardIn) -> dict:
+    def ingest(board: ConceptBoardIn, cognitive_load: int = 6) -> dict:
         if not board.label or not board.source_path:
             raise HTTPException(400, "label and source_path are required")
         result = ingest_concept_board(store, ConceptBoard(**board.model_dump()))
-        return {"ingested": result, "stats": store.stats()}
+
+        # Run through the CSTM Lattice if available — N-05 generates the
+        # 10-field metadata, N-08 persists the audit envelope.
+        envelope = bridge.run(
+            f"Codex ingest: {board.label}", cognitive_load=cognitive_load,
+        )
+        if envelope.available and not envelope.error:
+            # Record the lattice envelope in WorkingMemory for provenance
+            store.upsert_memory(WorkingMemoryRecord(
+                topic=f"{board.label}_lattice_audit",
+                memory_value=(f"session={envelope.session_id} "
+                              f"zone={envelope.zone} qa={envelope.qa_pass} "
+                              f"persisted={envelope.persisted_path}"),
+                source_artifact=board.label,
+                confidence=1.0 if envelope.qa_pass else 0.5,
+                next_use="See yaml_frontmatter on the lattice envelope.",
+            ))
+
+        return {
+            "ingested": result,
+            "stats":    store.stats(),
+            "lattice":  envelope.to_dict(),
+        }
+
+    # ── CSTM_Lattice bridge status ───────────────────────────
+    @app.get("/api/lattice/status")
+    def lattice_status() -> dict:
+        return {"available": bridge.available}
 
     # ── Static dashboard ─────────────────────────────────────
     static_dir = Path(__file__).parent / "static"

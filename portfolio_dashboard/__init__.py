@@ -36,6 +36,12 @@ from .aggregator import (
     MediaSummary,
     DisciplineSummary,
 )
+from .lattice_bridge import CodexLatticeBridge, LatticeEnvelope
+from .per_project import (
+    generate_dashboard_html,
+    write_dashboard_for_canon_id,
+    write_dashboards_for_all,
+)
 
 __all__ = [
     "CodexStore",
@@ -49,4 +55,9 @@ __all__ = [
     "CanonSummary",
     "MediaSummary",
     "DisciplineSummary",
+    "CodexLatticeBridge",
+    "LatticeEnvelope",
+    "generate_dashboard_html",
+    "write_dashboard_for_canon_id",
+    "write_dashboards_for_all",
 ]
